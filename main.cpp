@@ -3,14 +3,18 @@
 
 #include "loveletterwidget.h"
 
+#include "agent.h"
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    //MainWindow w;
-    //w.show();
+    MainWindow w;
+    w.show();
 
-    LoveLetterWidget lw;
-    lw.show();
+    //LoveLetterWidget lw;
+    //lw.show();
+
+    Agent ag;
 
     return a.exec();
 }

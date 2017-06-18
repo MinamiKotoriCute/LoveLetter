@@ -18,11 +18,17 @@ SOURCES += main.cpp\
     gamebase.cpp \
     lovelettergame.cpp \
     qlearning.cpp \
-    agent.cpp
+    agent.cpp \
+    maptreewidget.cpp \
+    showdatawidget.cpp
 
 HEADERS  += mainwindow.h \
     loveletterwidget.h \
     gamebase.h \
     lovelettergame.h \
     qlearning.h \
-    agent.h
+    agent.h \
+    maptreewidget.h \
+    showdatawidget.h
+
+include("D:\All\Code\QT\module\easywebcontrol\easywebcontrol.pri")

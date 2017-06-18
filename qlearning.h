@@ -753,8 +753,13 @@ public:
         noQ[lastState][choseAction]++;
         float ALPHA = alphaQ ( noQ[lastState][choseAction] );
 
+        double a1 = Q[lastState][choseAction];
         Q[lastState][choseAction] = ((1-ALPHA) * Q[lastState][choseAction]) + (ALPHA * total);
+        double a2 = Q[lastState][choseAction];
     }
+
+    StateActionSpace Q;
+    StateActionSpace noQ;
 
 private:
     Index maxIndex(const WeightSpace &ws) const{
@@ -782,9 +787,6 @@ private:
     float maxWeight(const StateActionSpace &stateActionSpace, const State state) const{
         return maxData(stateActionSpace.at(state));
     }
-
-    StateActionSpace Q;
-    StateActionSpace noQ;
 };
 }
 

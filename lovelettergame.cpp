@@ -41,7 +41,8 @@ void LoveLetterGame::executeAction(QVector<int> action)
     case 5:{
         if(targetPlayer == -1)
             break;
-        if(_handCards[targetPlayer] == 8){
+        /// 自定義，背棄牌時若沒牌可抽，判定死亡
+        if(_handCards[targetPlayer] == 8 || _cards.isEmpty()){
             playerDying(targetPlayer);
         }
         else{
@@ -69,10 +70,12 @@ void LoveLetterGame::executeAction(QVector<int> action)
 
 void LoveLetterGame::settle()
 {
-    int maxPlayerId = 0;
-    int maxCard = _handCards[maxPlayerId];
+    int maxPlayerId = -1;
+    int maxCard = INT_MIN;
 
-    for(int i=1;i<_handCards.size();i++){
+    for(int i=0;i<_handCards.size();i++){
+        if(_isDead[i] == true)
+            continue;
         if(maxCard < _handCards[i]){
             maxCard = _handCards[i];
             maxPlayerId = i;
@@ -97,6 +100,8 @@ void LoveLetterGame::prepare()
 {
     _handCards.clear();
     _isInvincible.clear();
+    _isDead.clear();
+    _alivePlayerNumber = _playerNumber;
 
     // 洗牌
     _cards = {1,1,1,1,1,2,2,3,3,4,4,5,5,6,7,8};
@@ -111,6 +116,7 @@ void LoveLetterGame::prepare()
     for(int i=0;i<_playerNumber;i++){
         _handCards << _cards.takeFirst();
         _isInvincible << false;
+        _isDead << false;
     }
 
     _turn = -1;
@@ -120,10 +126,14 @@ void LoveLetterGame::prepare()
 
 void LoveLetterGame::nextRound()
 {
-    ++_turn;
-    if(_turn == _handCards.size()){
-        _turn = 0;
-    }
+    do{
+        ++_turn;
+        if(_turn == _handCards.size()){
+            _turn = 0;
+            continue;
+        }
+    }while(_isDead[_turn] == true);
+
     if(_isInvincible.at(_turn) == true){
         _isInvincible[_turn] = false;
     }
@@ -132,7 +142,7 @@ void LoveLetterGame::nextRound()
         settle();
         return;
     }
-    if(_handCards.size() <= 1){
+    if(_alivePlayerNumber == 1){
         settle();
         return;
     }
@@ -148,6 +158,8 @@ void LoveLetterGame::nextRound()
         for(int i=0;i<_handCards.size();i++){
             if(i==_turn)
                 continue;
+            if(_isDead[i] == true)
+                continue;
             if(_isInvincible.at(i) == true)
                 continue;
             for(int j=2;j<=8;j++){
@@ -159,6 +171,8 @@ void LoveLetterGame::nextRound()
         for(int i=0;i<_handCards.size();i++){
             if(i==_turn)
                 continue;
+            if(_isDead[i] == true)
+                continue;
             if(_isInvincible.at(i) == true)
                 continue;
             actions.push_back({2,i});
@@ -167,6 +181,8 @@ void LoveLetterGame::nextRound()
     if(_handCards[_turn] == 3 || _extraHandCard == 3){
         for(int i=0;i<_handCards.size();i++){
             if(i==_turn)
+                continue;
+            if(_isDead[i] == true)
                 continue;
             if(_isInvincible.at(i) == true)
                 continue;
@@ -178,12 +194,14 @@ void LoveLetterGame::nextRound()
     }
     if(_handCards[_turn] == 7 || _extraHandCard == 7){
         if(_handCards[_turn] == 5 || _extraHandCard == 5 || _handCards[_turn] == 6 || _extraHandCard == 6){
-            actions.push_back({7});
         }
+        actions.push_back({7});
     }
     else{
         if(_handCards[_turn] == 5 || _extraHandCard == 5){
             for(int i=0;i<_handCards.size();i++){
+                if(_isDead[i] == true)
+                    continue;
                 if(_isInvincible.at(i) == true)
                     continue;
                 actions.push_back({5,i});
@@ -192,6 +210,8 @@ void LoveLetterGame::nextRound()
         if(_handCards[_turn] == 6 || _extraHandCard == 6){
             for(int i=0;i<_handCards.size();i++){
                 if(i==_turn)
+                    continue;
+                if(_isDead[i] == true)
                     continue;
                 if(_isInvincible.at(i) == true)
                     continue;
@@ -214,12 +234,15 @@ void LoveLetterGame::nextRound()
 
 void LoveLetterGame::playerDying(int playerId)
 {
-    if(playerId <= _turn){
-        --_turn;
-    }
-    _handCards.removeAt(playerId);
+    _isDead[playerId] = true;
+    --_alivePlayerNumber;
 
     emit playerDead(playerId);
+}
+
+QList<bool> LoveLetterGame::isDead() const
+{
+    return _isDead;
 }
 
 int LoveLetterGame::turn() const

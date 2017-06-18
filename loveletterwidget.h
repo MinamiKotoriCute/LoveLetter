@@ -22,15 +22,11 @@ public slots:
 private:
     void send(QVector<int> action);
 
-    int id2realId(int id);
-    int realId2id(int realId);
-
     int _playerNumber;
     QVector<QPushButton *> buttons;
     LoveLetterGame *game;
     QList<QGroupBox *> groups;
     QTextEdit *textEdit;
-    QVector<bool> isPlayerDead;
 };
 
 #endif // LOVELETTERWIDGET_H

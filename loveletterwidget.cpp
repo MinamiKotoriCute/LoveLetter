@@ -16,7 +16,6 @@ LoveLetterWidget::LoveLetterWidget(QWidget *parent) : QWidget(parent), game(new 
     for(int i=0;i<_playerNumber;i++){
         QGroupBox *groupBox = new QGroupBox(QString::asprintf("Player %d", i));
 
-        isPlayerDead << false;
         groups << groupBox;
         hb->addWidget(groupBox);
     }
@@ -51,40 +50,30 @@ LoveLetterWidget::LoveLetterWidget(QWidget *parent) : QWidget(parent), game(new 
         for(int i=0;i<actions.size();i++){
             QString s;
             for(int j=0;j<actions.at(i).size();j++){
-                int small_action = actions.at(i).at(j);
-                if(j==1)
-                    small_action = id2realId(small_action);
-                s += QString::asprintf("%d ", small_action);
+                s += QString::asprintf("%d ", actions.at(i).at(j));
             }
             QPushButton *button = new QPushButton(s);
             connect(button, &QPushButton::clicked, [=]{
                 QVector<int> action;
                 QStringList s = button->text().split(' ');
                 for(int j=0;j<s.size()-1;j++){
-                    int small_action = s.at(j).toInt();
-                    if(j==1)
-                        small_action = realId2id(small_action);
-                    action.push_back(small_action);
+                    action.push_back(s.at(j).toInt());
                 }
-                textEdit->append(QString::asprintf("player: %d, Action: ", id2realId(game->turn())) + button->text());
+                textEdit->append(QString::asprintf("player: %d, Action: ", game->turn()) + button->text());
                 send(action);
             });
             vb->addWidget(button);
         }
         vb->addStretch(1);
-        groups[id2realId(game->turn())]->setLayout(vb);
+        groups[game->turn()]->setLayout(vb);
     });
 
     connect(game, &LoveLetterGame::gameOver, [=](int winner){
-        textEdit->append(QString::asprintf("winner: %d", id2realId(winner)));
-        for(bool &isDead : isPlayerDead){
-            isDead = false;
-        }
+        textEdit->append(QString::asprintf("winner: %d\n", winner));
     });
 
     connect(game, &LoveLetterGame::playerDead, [=](int playerId){
-        textEdit->append(QString::asprintf("dead: %d", id2realId(playerId)));
-        isPlayerDead[id2realId(playerId)] = true;
+        textEdit->append(QString::asprintf("dead: %d", playerId));
     });
 
     game->setPlayerNumber(_playerNumber);
@@ -97,24 +86,4 @@ void LoveLetterWidget::send(QVector<int> action)
     QTimer::singleShot(0, [=]{
         game->executeAction(action);
     });
-}
-
-int LoveLetterWidget::realId2id(int realId)
-{
-    for(int i=realId;i>=0;i--){
-        if(isPlayerDead[i]){
-            --realId;
-        }
-    }
-    return realId;
-}
-
-int LoveLetterWidget::id2realId(int id)
-{
-    for(int i=0;i<=id && i<isPlayerDead.size();i++){
-        if(isPlayerDead[i]){
-            ++id;
-        }
-    }
-    return id;
 }
