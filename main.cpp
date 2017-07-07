@@ -24,9 +24,9 @@ int main(int argc, char *argv[])
     //Agent ag;
 
     /// show agent result
-    MapTreeWidget m;
-    m.setData(loadJson());
-    m.show();
+    //MapTreeWidget m;
+    //m.setData(loadJson());
+    //m.show();
 
     return a.exec();
 }
