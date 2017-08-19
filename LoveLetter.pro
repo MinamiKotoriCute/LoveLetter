@@ -31,4 +31,4 @@ HEADERS  += mainwindow.h \
     maptreewidget.h \
     showdatawidget.h
 
-include("D:\All\Code\QT\module\easywebcontrol\easywebcontrol.pri")
+include("D:\All\Code\QT\module\commonfunction\commonfunction.pri")

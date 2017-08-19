@@ -5,7 +5,7 @@
 #include <QTimer>
 #include <QJsonObject>
 
-#include "easywebcontrol.h"
+#include "commonfunction.h"
 
 static int count_debug = 0;
 static const int max_count_debug = 100000;

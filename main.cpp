@@ -1,12 +1,12 @@
 #include "mainwindow.h"
 #include <QApplication>
 
-#include "loveletterwidget.h"
+#include "maptreewidget.h"
+#include "commonfunction.h"
 
+#include "loveletterwidget.h"
 #include "agent.h"
 
-#include "maptreewidget.h"
-#include "easywebcontrol.h"
 
 int main(int argc, char *argv[])
 {
@@ -24,9 +24,9 @@ int main(int argc, char *argv[])
     //Agent ag;
 
     /// show agent result
-    //MapTreeWidget m;
-    //m.setData(loadJson());
-    //m.show();
+    MapTreeWidget m;
+    m.setData(loadJson());
+    m.show();
 
     return a.exec();
 }
